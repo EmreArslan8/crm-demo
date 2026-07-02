@@ -141,11 +141,11 @@ function renderRandevular(){
     .sort((a,b)=>(b.tarih+b.saat).localeCompare(a.tarih+a.saat));
   $("#randevuTable").innerHTML = rows.map(r=>`
     <tr>
-      <td>${trTarih(r.tarih)}</td><td>${r.saat}</td>
-      <td><strong>${musteriAd(r.musteriId)}</strong></td>
-      <td>${r.hizmet}</td>
-      <td><span class="badge ${r.durum}">${{bekliyor:"Bekliyor",tamamlandi:"Tamamlandı",iptal:"İptal"}[r.durum]}</span></td>
-      <td class="ta-r">${r.durum==="bekliyor" ? `
+      <td data-label="Tarih">${trTarih(r.tarih)}</td><td data-label="Saat">${r.saat}</td>
+      <td data-label="Müşteri"><strong>${musteriAd(r.musteriId)}</strong></td>
+      <td data-label="Hizmet">${r.hizmet}</td>
+      <td data-label="Durum"><span class="badge ${r.durum}">${{bekliyor:"Bekliyor",tamamlandi:"Tamamlandı",iptal:"İptal"}[r.durum]}</span></td>
+      <td class="ta-r row-actions">${r.durum==="bekliyor" ? `
         <button class="row-btn" onclick="durum(${r.id},'tamamlandi')">Tamamla</button>
         <button class="row-btn danger" onclick="durum(${r.id},'iptal')">İptal</button>` : ""}
       </td>
@@ -169,11 +169,11 @@ function renderCari(){
     .sort((a,b)=>b.tarih.localeCompare(a.tarih));
   $("#cariTable").innerHTML = rows.map(i=>`
     <tr>
-      <td>${trTarih(i.tarih)}</td>
-      <td><strong>${i.aciklama}</strong></td>
-      <td><span class="src">${i.kategori}</span></td>
-      <td class="ta-r"><span class="amount ${i.tur==="gelir"?"pos":"neg"}">${i.tur==="gelir"?"+":"−"}${TL(i.tutar)}</span></td>
-      <td class="ta-r"><button class="row-btn danger" onclick="silIslem(${i.id})">Sil</button></td>
+      <td data-label="Tarih">${trTarih(i.tarih)}</td>
+      <td data-label="Açıklama"><strong>${i.aciklama}</strong></td>
+      <td data-label="Kategori"><span class="src">${i.kategori}</span></td>
+      <td class="ta-r" data-label="Tutar"><span class="amount ${i.tur==="gelir"?"pos":"neg"}">${i.tur==="gelir"?"+":"−"}${TL(i.tutar)}</span></td>
+      <td class="ta-r row-actions"><button class="row-btn danger" onclick="silIslem(${i.id})">Sil</button></td>
     </tr>`).join("") || `<tr><td colspan="5" class="muted">Kayıt yok.</td></tr>`;
 }
 window.silIslem = id => { DB.islemler = DB.islemler.filter(i=>i.id!==id); save(); renderCari(); toast("İşlem silindi"); };
