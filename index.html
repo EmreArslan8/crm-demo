@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NovaCRM — İşletme Yönetim Paneli (Demo)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="brand">
+    <span class="brand-mark">N</span>
+    <span class="brand-name">NovaCRM</span>
+  </div>
+  <nav class="nav">
+    <a href="#dashboard" class="nav-item" data-view="dashboard"><span class="ico">◧</span><span>Panel</span></a>
+    <a href="#randevular" class="nav-item" data-view="randevular"><span class="ico">🗓</span><span>Randevular</span></a>
+    <a href="#cari" class="nav-item" data-view="cari"><span class="ico">₺</span><span>Gelir / Gider</span></a>
+    <a href="#musteriler" class="nav-item" data-view="musteriler"><span class="ico">☺</span><span>Müşteriler</span></a>
+    <a href="#leadler" class="nav-item" data-view="leadler"><span class="ico">⚡</span><span>Lead Akışı</span><span class="lead-dot" id="leadDot"></span></a>
+  </nav>
+  <div class="sidebar-foot">
+    <div class="demo-badge">DEMO SÜRÜM</div>
+    <p>Gerçek projede verileriniz güvenli veritabanında saklanır.</p>
+  </div>
+</aside>
+
+<main class="main">
+  <header class="topbar">
+    <div>
+      <h1 id="viewTitle">Panel</h1>
+      <p class="topbar-date" id="todayLabel"></p>
+    </div>
+    <button class="btn btn-primary" id="quickAddBtn">+ Hızlı Ekle</button>
+  </header>
+
+  <!-- DASHBOARD -->
+  <section class="view" id="view-dashboard">
+    <div class="stat-grid">
+      <div class="stat-card">
+        <span class="stat-label">Bugünkü Randevu</span>
+        <span class="stat-value" id="statRandevu">–</span>
+        <span class="stat-sub" id="statRandevuSub"></span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Bu Ay Gelir</span>
+        <span class="stat-value pos" id="statGelir">–</span>
+        <span class="stat-sub">tahsil edilen</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Bu Ay Gider</span>
+        <span class="stat-value neg" id="statGider">–</span>
+        <span class="stat-sub">ödenen</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Yeni Lead (7 gün)</span>
+        <span class="stat-value" id="statLead">–</span>
+        <span class="stat-sub" id="statLeadSub"></span>
+      </div>
+    </div>
+
+    <div class="dash-cols">
+      <div class="card">
+        <div class="card-head"><h2>Aylık Gelir / Gider</h2></div>
+        <div class="bar-chart" id="barChart"></div>
+        <div class="bar-legend">
+          <span><i class="dot dot-pos"></i>Gelir</span>
+          <span><i class="dot dot-neg"></i>Gider</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h2>Yaklaşan Randevular</h2><a href="#randevular" class="link">Tümü →</a></div>
+        <ul class="mini-list" id="dashRandevular"></ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>Son Gelen Leadler</h2><a href="#leadler" class="link">Akışa git →</a></div>
+      <ul class="mini-list" id="dashLeadler"></ul>
+    </div>
+  </section>
+
+  <!-- RANDEVULAR -->
+  <section class="view" id="view-randevular" hidden>
+    <div class="view-actions">
+      <div class="filter-row" id="randevuFilters">
+        <button class="chip active" data-f="hepsi">Hepsi</button>
+        <button class="chip" data-f="bekliyor">Bekliyor</button>
+        <button class="chip" data-f="tamamlandi">Tamamlandı</button>
+        <button class="chip" data-f="iptal">İptal</button>
+      </div>
+      <button class="btn btn-primary" data-open="modalRandevu">+ Randevu</button>
+    </div>
+    <div class="card table-card">
+      <table>
+        <thead><tr><th>Tarih</th><th>Saat</th><th>Müşteri</th><th>Hizmet</th><th>Durum</th><th></th></tr></thead>
+        <tbody id="randevuTable"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- CARİ -->
+  <section class="view" id="view-cari" hidden>
+    <div class="view-actions">
+      <div class="filter-row" id="cariFilters">
+        <button class="chip active" data-f="hepsi">Hepsi</button>
+        <button class="chip" data-f="gelir">Gelir</button>
+        <button class="chip" data-f="gider">Gider</button>
+      </div>
+      <button class="btn btn-primary" data-open="modalCari">+ İşlem</button>
+    </div>
+    <div class="cari-summary" id="cariSummary"></div>
+    <div class="card table-card">
+      <table>
+        <thead><tr><th>Tarih</th><th>Açıklama</th><th>Kategori</th><th class="ta-r">Tutar</th><th></th></tr></thead>
+        <tbody id="cariTable"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- MÜŞTERİLER -->
+  <section class="view" id="view-musteriler" hidden>
+    <div class="view-actions">
+      <input type="search" class="search" id="musteriSearch" placeholder="İsim veya telefon ara…">
+      <button class="btn btn-primary" data-open="modalMusteri">+ Müşteri</button>
+    </div>
+    <div class="customer-grid" id="musteriGrid"></div>
+  </section>
+
+  <!-- LEADLER -->
+  <section class="view" id="view-leadler" hidden>
+    <div class="lead-intro card">
+      <h2>Otomatik lead akışı</h2>
+      <p>Instagram ve Google Forms üzerinden gelen başvurular buraya <strong>otomatik</strong> düşer. Bir leadi tek tıkla müşteriye dönüştürebilirsiniz. <span class="muted">(Demo: akış simüle edilmektedir.)</span></p>
+    </div>
+    <ul class="lead-feed" id="leadFeed"></ul>
+  </section>
+</main>
+
+<!-- MODALLAR -->
+<div class="modal-backdrop" id="backdrop" hidden></div>
+
+<div class="modal" id="modalRandevu" hidden>
+  <h3>Yeni Randevu</h3>
+  <label>Müşteri<select id="rMusteri"></select></label>
+  <label>Tarih<input type="date" id="rTarih"></label>
+  <label>Saat<input type="time" id="rSaat" value="10:00"></label>
+  <label>Hizmet<input type="text" id="rHizmet" placeholder="örn. Danışmanlık seansı"></label>
+  <div class="modal-actions">
+    <button class="btn" data-close>Vazgeç</button>
+    <button class="btn btn-primary" id="rKaydet">Kaydet</button>
+  </div>
+</div>
+
+<div class="modal" id="modalCari" hidden>
+  <h3>Yeni İşlem</h3>
+  <label>Tür<select id="cTur"><option value="gelir">Gelir</option><option value="gider">Gider</option></select></label>
+  <label>Açıklama<input type="text" id="cAciklama" placeholder="örn. Nisan ayı paketi"></label>
+  <label>Kategori<input type="text" id="cKategori" placeholder="örn. Hizmet"></label>
+  <label>Tutar (₺)<input type="number" id="cTutar" min="0" step="50"></label>
+  <div class="modal-actions">
+    <button class="btn" data-close>Vazgeç</button>
+    <button class="btn btn-primary" id="cKaydet">Kaydet</button>
+  </div>
+</div>
+
+<div class="modal" id="modalMusteri" hidden>
+  <h3>Yeni Müşteri</h3>
+  <label>Ad Soyad<input type="text" id="mAd"></label>
+  <label>Telefon<input type="tel" id="mTel" placeholder="05__ ___ __ __"></label>
+  <label>Kaynak<select id="mKaynak"><option>Manuel</option><option>Instagram</option><option>Google Forms</option><option>Tavsiye</option></select></label>
+  <label>Not<textarea id="mNot" rows="2"></textarea></label>
+  <div class="modal-actions">
+    <button class="btn" data-close>Vazgeç</button>
+    <button class="btn btn-primary" id="mKaydet">Kaydet</button>
+  </div>
+</div>
+
+<div class="toast" id="toast" hidden></div>
+
+<script src="app.js"></script>
+</body>
+</html>
